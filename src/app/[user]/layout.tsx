@@ -10,7 +10,7 @@ export default function UserPageLayout({
         user: string
     }
 }) {
-    console.log('Userpage')
+
     return (
         <section>
             {children}
