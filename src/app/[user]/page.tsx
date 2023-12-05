@@ -3,9 +3,9 @@ import React from 'react'
 
 
 const Users = () => {
-    return (
+       return (
         <div className="container max-w-md m-auto mt-6 dark:text-gray-50">
-           user page
+         Fetching user details..
         </div>
     )
 }

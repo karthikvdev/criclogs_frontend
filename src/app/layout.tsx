@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { redirect } from 'next/navigation'
-import { useEffect } from 'react'
+import ReactQueryProviders from './providers'
+import { cookies } from 'next/headers'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -18,10 +18,11 @@ export default function RootLayout({
 }) {
 
 
-
   return (
-    <html lang="en" className="dark">
-      <body className={inter.className + " bg-white dark:bg-[#0f172a]"}>{children}</body>
+    <html lang="en" className={cookies().get("theme")?.value === "dark" ? "dark" : ""}>
+      <body className={inter.className + " bg-white dark:bg-[#0f172a]"}>
+        <ReactQueryProviders>{children}</ReactQueryProviders>
+      </body>
     </html>
   )
 }

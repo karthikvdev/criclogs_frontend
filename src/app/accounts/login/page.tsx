@@ -5,24 +5,29 @@ import Link from 'next/link';
 import InputField from '@/components/InputField';
 import Button from '@/components/Button';
 import { useForm } from "react-hook-form"
-import { ROUTES, STATUS } from '@/uitils/constants';
+import { BrowserStorage, Encryptor, ROUTES, STATUS } from '@/uitils/constants';
 import { ILogin } from '@/uitils/interface';
 import { ClientAuthService } from '@/services/client/client.auth.service';
 import { useRouter } from 'next/navigation';
+import { useMutation } from '@tanstack/react-query';
 
 const Login = () => {
     const router = useRouter();
+    const encryptor = new Encryptor()
+    const storage = new BrowserStorage()
+    const mutation = useMutation({
+        mutationFn: (values: ILogin) => {
+            return clientAuthService.login(values);
+        }
+    })
     const clientAuthService = new ClientAuthService()
     const { handleSubmit, register, formState: { errors } } = useForm<ILogin>();
     const handleOnLogin = async (data: ILogin) => {
-        const login = await clientAuthService.login(data);
-        console.log("login", login?.data?.username)
+        const login = await mutation.mutateAsync(data);
         if (login?.status === STATUS.SUCCESS) {
+            storage.setLocalStorage("client", encryptor.encoder(login?.data))
             router.push(ROUTES.DASHBOARD(login?.data?.username))
         }
-
-
-
     }
 
     const loginValidation = {
@@ -44,7 +49,7 @@ const Login = () => {
                             >Forgot your password?</p>
                         </div>
                     </div>
-                    <Button type="submit" name='Sign in' />
+                    <Button isLoading={mutation?.isPending} type="submit" name='Sign in' />
                     <div className="bg-gray-100 text-center text-gray-700 py-5">
                         {"Don't have a account? "}
                         <Link href={ROUTES.REGISTER} className="font-semibold no-underline text-black">Signup</Link>

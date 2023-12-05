@@ -9,11 +9,19 @@ import { ROUTES, STATUS } from '@/uitils/constants';
 import { IRegister } from '@/uitils/interface';
 import { ClientAuthService } from '@/services/client/client.auth.service';
 import { useRouter } from 'next/navigation';
+import { useMutation } from '@tanstack/react-query';
 
 
 const Register = () => {
     const router = useRouter();
+
     const clientAuthService = new ClientAuthService()
+    const mutation = useMutation({
+        mutationFn: (values: IRegister) => {
+            return clientAuthService.register(values);
+        }
+    })
+
     const { register, handleSubmit, formState: { errors } } = useForm<IRegister>();
     const registerValidation = {
         firstname: { required: "First name is required" },
@@ -24,14 +32,14 @@ const Register = () => {
         password: { required: "Password is required", minLength: { value: 8, message: "Password should contain 8 characters." } }
     }
 
+
     const handleOnRegister = async (value: IRegister) => {
         value.roles = ["ADMIN"];
-        const register = await clientAuthService.register(value);
-        console.log('register', register);
-        if (register?.status === STATUS.SUCCESS) {
-            router.push("/accounts/login")
-
-        }
+        mutation.mutateAsync(value).then((res) => {
+            if (res.status === STATUS.SUCCESS) {
+                router.push(ROUTES.LOGIN)
+            }
+        });
     }
 
 
@@ -59,7 +67,7 @@ const Register = () => {
                             >Forgot your password?</p>
                         </div>
                     </div>
-                    <Button name='Sign up' type='submit' />
+                    <Button isLoading={mutation?.isPending} name='Sign up' type='submit' />
                 </form>
                 <div className="bg-gray-100 text-center text-gray-700 py-5">
                     {"Already have a account? "}

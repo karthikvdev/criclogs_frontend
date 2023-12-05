@@ -1,8 +1,8 @@
 import { AxiosError } from "axios";
-import { BaseService, parseAxiosError } from "../base.service";
 import { IErrorResponse, ILogin, IRegister, ISuccessResponse } from "@/uitils/interface";
+import { ClientBaseService, parseAxiosError } from "./client.base.service";
 
-export class ClientAuthService extends BaseService {
+export class ClientAuthService extends ClientBaseService {
 
     public async register(value: IRegister): Promise<ISuccessResponse | IErrorResponse> {
         try {
@@ -21,4 +21,14 @@ export class ClientAuthService extends BaseService {
             return parseAxiosError(error as AxiosError)
         }
     }
+
+    public async validUser(): Promise<ISuccessResponse | IErrorResponse> {
+        try {
+            const { data } = await this.httpClient.get(this.CLIENT_API_END_POINTS.VALID_USER);
+            return data;
+        } catch (error) {
+            return parseAxiosError(error as AxiosError)
+        }
+    }
+
 }

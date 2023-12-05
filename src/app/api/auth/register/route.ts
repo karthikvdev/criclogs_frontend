@@ -6,7 +6,7 @@ export async function POST(req: Request) {
         const serverAuthService = new ServerAuthService()
         const payload = await req.json();
         const response = await serverAuthService.register(payload);
-        return NextResponse.json({ ...response }, { status: response?.message?.statusCode })
+        return NextResponse.json({ ...response }, { status: response?.statusCode })
     } catch (error) {
         return NextResponse.json({ status: 401, message: "Heelo" })
     }
